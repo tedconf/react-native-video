@@ -12,6 +12,11 @@
 #import <DVAssetLoaderDelegate/DVAssetLoaderDelegate.h>
 #endif
 
+@protocol RCTVideoDelegate <NSObject>
+@optional
+- (BOOL)willSetupPlayerItem:(AVPlayerItem *) playerItem forSource:(NSDictionary *) source;
+@end
+
 @class RCTEventDispatcher;
 #if __has_include(<react-native-video/RCTVideoCache.h>)
 @interface RCTVideo : UIView <RCTVideoPlayerViewControllerDelegate, DVAssetLoaderDelegatesDelegate>
@@ -43,10 +48,14 @@
 @property (nonatomic, copy) RCTDirectEventBlock onPictureInPictureStatusChanged;
 @property (nonatomic, copy) RCTDirectEventBlock onRestoreUserInterfaceForPictureInPictureStop;
 
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 - (AVPlayerViewController*)createPlayerViewController:(AVPlayer*)player withPlayerItem:(AVPlayerItem*)playerItem;
 
 - (void)save:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+
+@property (nonatomic, weak) id <RCTVideoDelegate> rctVideoDelegate;
+- (void)setupPlayerItem:(AVPlayerItem *)playerItem forSource:(NSDictionary *)source withPlayer:(AVPlayer *)player;
 
 @end
