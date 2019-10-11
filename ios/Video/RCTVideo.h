@@ -14,7 +14,7 @@
 
 @protocol RCTVideoDelegate <NSObject>
 @optional
-- (BOOL)willSetupPlayerItem:(AVPlayerItem *) playerItem forSource:(NSDictionary *) source;
+- (BOOL)shouldSetupPlayerItem:(AVPlayerItem *) playerItem forSource:(NSDictionary *) source;
 @end
 
 @class RCTEventDispatcher;

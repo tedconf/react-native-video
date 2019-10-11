@@ -352,8 +352,8 @@ static int const RCTVideoUnset = -1;
     // perform on next run loop, otherwise other passed react-props may not be set
     [self playerItemForSource:source withCallback:^(AVPlayerItem * playerItem) {
         if (self->_rctVideoDelegate == nil ||
-            ![self->_rctVideoDelegate respondsToSelector:@selector(willSetupPlayerItem:forSource:)] ||
-            ![self->_rctVideoDelegate willSetupPlayerItem:playerItem forSource:source])
+            ![self->_rctVideoDelegate respondsToSelector:@selector(shouldSetupPlayerItem:forSource:)] ||
+            ![self->_rctVideoDelegate shouldSetupPlayerItem:playerItem forSource:source])
         {
             [self setupPlayerItem:playerItem forSource:source withPlayer:nil];
         }
