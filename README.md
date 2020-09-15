@@ -1452,6 +1452,55 @@ allprojects {
 
 If you encounter an error `Could not find com.android.support:support-annotations:27.0.0.` reinstall your Android Support Repository.
 
+## Video Ads Libraries and `react-native-video`
+
+This library aims to be focused on `video playback` only, avoiding any dependency or setting a preference in a specific vendor.
+In order to allow the community to create extending libraries there are options like:
+
+### iOS - Delegate
+
+First step is to create a delegate and set it to the `react-video-component`.
+You can do it using calling a code like this in your library:
+```
+- (BOOL)isRCTVideo:(UIView *)view {
+    return [view respondsToSelector:@selector(setRctVideoDelegate:)];
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+    [super insertReactSubview:subview atIndex:atIndex];
+    if (subview.reactSubviews.count > 0) {
+        for (int i = 0; i < subview.reactSubviews.count; i++) {
+            UIView* subsubview = [subview.reactSubviews objectAtIndex:i];
+            if ([self isRCTVideo:subsubview]) {
+                RCTVideo * rctVideo = (RCTVideo *)subsubview
+                rctVideo.rctVideoDelegate = self;
+                _rctVideo = rctVideo; // keep the reference!
+            }
+        }
+    }
+}
+```
+
+The delegate allows the following protocols to be implemented and take over `react-native-video` behavior:
+```objc
+// Will the delegate setup the player later?
+- (BOOL)willSetupPlayerItem:(AVPlayerItem *) playerItem forSource:(NSDictionary *) source;
+```
+
+Also will be able to call the following public methods:
+```objc
+// Sets up the `react-native-video` player.
+// This MUST be called if `willSetupPlayerItem:forSource:` returns true.
+// SHOULDN'T be called otherwise (default `react-native-video` behavior)
+- (void)setupPlayerItem:(AVPlayerItem *)playerItem forSource:(NSDictionary *)source withPlayer:(AVPlayer *)player;
+```
+
+Note: Depending on how your library behave, you may have to call
+```objc
+[self observeValueForKeyPath:@"status" ofObject:playerItem change:nil context:nil];
+```
+
 ## TODOS
 
 - [ ] Add support for playing multiple videos in a sequence (will interfere with current `repeat` implementation)
