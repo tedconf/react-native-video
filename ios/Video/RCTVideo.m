@@ -225,6 +225,17 @@ static int const RCTVideoUnset = -1;
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
+  if (@available(iOS 14, *)) {
+    if (_playInBackground || _playWhenInactive){
+      if (!_paused) {
+        [_playerLayer setPlayer:nil];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self->_player play];
+        });
+      }
+    }
+  }
+  
   if (_playInBackground || _playWhenInactive || _paused) return;
   
   [_player pause];
@@ -237,6 +248,11 @@ static int const RCTVideoUnset = -1;
     // Needed to play sound in background. See https://developer.apple.com/library/ios/qa/qa1668/_index.html
     [_playerLayer setPlayer:nil];
     [_playerViewController setPlayer:nil];
+
+    if (!_paused) {
+        [_player play];
+    }
+
   }
 }
 
@@ -1441,7 +1457,7 @@ static int const RCTVideoUnset = -1;
     [self.layer addSublayer:_playerLayer];
     self.layer.needsDisplayOnBoundsChange = YES;
     #if TARGET_OS_IOS
-    [self setupPipController];
+    // [self setupPipController];
     #endif
   }
 }
